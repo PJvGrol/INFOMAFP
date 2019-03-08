@@ -13,3 +13,21 @@ Project for the Advanced Functional Programming
 3. Error messages on json level - invalid structure, missing values etc.
 4. Error messages on model level - data structure does not match grapgh type etc.
 5. Include file output type of the graph (SVG, PNG etc.) in the input file (Also with default).
+
+# Initial Model
+
+```haskell
+data Settings = Settings {
+  data :: DataType
+  type :: GraphType
+  title :: Maybe String
+  properties :: Maybe [PropertyType]
+  output :: Maybe OutputType
+}
+
+data GraphType = Pie | Plot | Vector | ...
+data OutputType = SVG | PNG | PS | ...
+data PropertyType = Color Color | BorderColor Color | BorderWidth Double | Radius Double | ...
+
+data DataType x y = PlotPoints [(x,y)] | Fill [(x, (y,y))] | ...
+```

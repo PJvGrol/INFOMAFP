@@ -1,0 +1,7 @@
+{
+  "dataType": "data type",
+  "graphType": "line_plot",
+  "title": "A plot",
+  "values" : "[]",
+  "properties" : [{ "prop" : "prop1" , "points" : "[[1,2]]" }]
+}

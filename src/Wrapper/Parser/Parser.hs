@@ -8,10 +8,9 @@ import Data.Maybe
 import Data.ByteString.Lazy
 import Data.Map
 
-data PSettings = PSettings { dataType      :: Text,
+data PSettings = PSettings { inputData     :: Text,
                              graphType     :: Text, 
                              title         :: Maybe Text,
-                             values        :: Text,
                              properties    :: Maybe [Map Text Text],
                              outputType    :: Maybe Text } 
                              deriving Show
@@ -20,10 +19,9 @@ type Text = String
 
 instance FromJSON PSettings where
   parseJSON (Object v) =
-    PSettings <$> v .:  "dataType"
+    PSettings <$> v .:  "inputData"
               <*> v .:  "graphType" 
               <*> v .:? "title"
-              <*> v .:  "values"
               <*> v .:? "properties"
               <*> v .:? "outputType"
   parseJSON _ = error "Wrong structure of input file"                               

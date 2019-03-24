@@ -73,7 +73,7 @@ limit_values: Additional lines to be plotted specified unsing the Limit type
 -}
 data LinesData x y = LinesData' {
                        l_values :: [[(x,y)]],
-                       limit_values :: Maybe [[(Limit x, Limit y)]]
+                       limit_values :: Maybe [[(x,y)]]
                        }
 
 {- 

@@ -1,7 +1,7 @@
 {
-  "dataType": "data type",
-  "graphType": "line_plot",
+  "inputData": "data type",
+  "graphType": "lines",
   "title": "A plot",
-  "values" : "[]",
-  "properties" : [{ "prop" : "prop1" , "points" : "[[1,2]]" }]
+  "values" : "[[(1,1),(2,2)]]",
+  "properties" : [{ "limit_values" : "[[(3,3)]]" , "line_style" : "[1.0,\"Red\",Nothing]" }]
 }

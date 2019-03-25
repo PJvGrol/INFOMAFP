@@ -9,7 +9,7 @@ Important changes (for now) with respect to the Chart library:
 
 * PointStyle: Left out the option PointShape. 
 
-* LineStyle:  Left out the options LineCap and LineJoin.
+* LineStyle:  Left out the options LineCap and LineJoin. 
 
 * FillStyle:  Changed this directly into Color.
 
@@ -21,20 +21,18 @@ Important changes (for now) with respect to the Chart library:
 * AreaSpots:  Ignored the 4D option in areaspots.
 
 * Annotation: Did not add all style options that are in the Chart library, only added
-              the option to add simple text annotations.
+              the option to add simple string annotations.
 
 * Pie:        Added color in PieItem constructor instead of in a separate list.
 
 -}
 
-type Text = String
-
 data Settings x y z = Settings { 
    inputData  :: InputData x y z,
    graphType  :: GraphType,
-   title      :: Maybe Text,
+   title      :: Maybe String,
    properties :: [PropertyType],
-   output     :: Maybe OutputType
+   output     :: OutputType
   }
   
 data GraphType = Pie | Vector | Points | Lines | Histogram | Fill | ErrorBars
@@ -45,7 +43,7 @@ data OutputType = SVG | PNG | PS
 data InputData x y z = PlotPoints [(x,y)]
                      | FillData [(x,(y,y))]
                      | VectorData x y
-                     | LinesData x y
+                     | LinesData (LinesData x y)
                      | HistoData x y
                      | ErrorData [ErrorPoint x y]
                      | HiddenValues x y
@@ -73,7 +71,7 @@ limit_values: Additional lines to be plotted specified unsing the Limit type
 -}
 data LinesData x y = LinesData' {
                        l_values :: [[(x,y)]],
-                       limit_values :: Maybe [[(x,y)]]
+                       limit_values :: Maybe [[(x, y)]]
                        }
 
 {- 

@@ -1,3 +1,5 @@
+{- This module has several functions that help convert PSettings to subtypes 
+   defined in ChartData.hs. In this case for all line plot graphs. -}
 module LinesValidator where
 
 import Prelude hiding (lookup)
@@ -6,14 +8,16 @@ import ChartData
 import ErrorData
 import Text.Read (readMaybe)
 import Data.Map
+import ConvertDefaults
+import Data.Maybe (fromJust)
 
 {- Fills the requiered data fields for a line plot. It returns either the data or 
    a list of all errors found. -}
-parseLineInput :: String -> Maybe (Map String String) -> Either ErrorList (LinesData Double Double) 
+parseLineInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double z) 
 parseLineInput inp pro = case parseVal inp of Left e1  -> case lookUpLimit pro of Left e2 -> Left (Errors [e1,e2])
                                                                                   _       -> Left (Errors [e1])
                                               Right v1 -> case lookUpLimit pro of Left e2  -> Left (Errors [e2])
-                                                                                  Right v2 -> Right (LinesData' v1 v2)
+                                                                                  Right v2 -> Right (LinesData (LinesData' v1 v2))
 
 {- Tries to parse the input data for a line plot. -}                                                                                  
 parseVal :: String -> Either ValError [[(Double,Double)]]
@@ -29,17 +33,29 @@ lookUpLimit dic = case dic of Nothing -> Right Nothing
                                                                                                          e       -> e
                                                                 
 parseLimit :: String -> Either ValError (Maybe [[(Double,Double)]])  
-parseLimit lim = case readMaybe lim :: Maybe [[(Double,Double)]] of Just v  -> Right (Just v)
-                                                                    Nothing -> Left (DataNotMatchesType "The provided limit values for a line plot do not match the correct type. The desired type is [[(Limit x, Limit y)]].")
-                                                                       
-lookUpLineStyle :: Maybe (Map String String) -> Either ErrorList (Maybe LineStyle)
-lookUpLineStyle dic = case dic of Nothing -> Right Nothing
-                                  Just d  -> case lookup "line_style" d of Nothing -> Right Nothing
-                                                                           Just v  -> parseLineStyle v
+parseLimit lim = case readMaybe lim :: Maybe [[(Double,Double)]] of 
+                        Just v  -> Right (Just v)
+                        Nothing -> Left (DataNotMatchesType "The provided limit values for a line plot do not match the correct type. The desired type is [[(x,y)]].")                                                                       
                                                                           
-parseLineStyle :: String -> Either ErrorList (Maybe LineStyle)
-parseLineStyle s = let val = readMaybe s :: Maybe (String,String,String) in 
-                     case val of Nothing          -> Left (Errors [DataNotMatchesType "The provided line style should have the form (x,y,z)."])
-                                 Just (v1,v2,v3)  -> undefined     
-                                 
-                     
+parseLineProp :: Maybe (Map String String) -> Either ErrorList (Maybe [PropertyType])
+parseLineProp dic | dic == Nothing = Right Nothing
+                  | otherwise      = case parseLineStyle (fromJust dic) of Right Nothing  -> Right Nothing
+                                                                           Right (Just v) -> Right (Just [LineStyle v])
+                                                                           Left e         -> Left e
+                                                                                                   
+parseLineStyle :: (Map String String) -> Either ErrorList (Maybe LineStyle)
+parseLineStyle dic = let v1   = parseDouble "lineWidth" dic
+                         v2   = parseColor "lineColor" dic
+                         v3   = parseDoubleList "lineDashes" dic in
+                                foldLineStyle v1 v2 v3
+
+{- Either combines all the errors it has found so far or returns the result as a
+   LineStyle -}
+foldLineStyle (Left e1) (Left e2) (Left e3)    = Left (Errors ([e1] ++ [e2] ++ [e3]))
+foldLineStyle (Left e1) (Left e2) _            = Left (Errors ([e1] ++ [e2]))
+foldLineStyle (Left e1) _         (Left e3)    = Left (Errors ([e1] ++ [e3]))
+foldLineStyle _         (Left e2) (Left e3)    = Left (Errors ([e2] ++ [e3]))
+foldLineStyle (Left e1) _         _            = Left (Errors [e1])
+foldLineStyle _         (Left e2) _            = Left (Errors [e2])
+foldLineStyle _         _         (Left e3)    = Left (Errors [e3])
+foldLineStyle (Right v1) (Right v2) (Right v3) = Right (Just (LineStyle' v1 v2 v3))

@@ -8,14 +8,12 @@ import Data.Maybe
 import Data.ByteString.Lazy
 import Data.Map
 
-data PSettings = PSettings { inputData     :: Text,
-                             graphType     :: Text, 
-                             title         :: Maybe Text,
-                             properties    :: Maybe [Map Text Text],
-                             outputType    :: Maybe Text } 
+data PSettings = PSettings { inputData     :: String,
+                             graphType     :: String, 
+                             title         :: Maybe String,
+                             properties    :: Maybe (Map String String),
+                             outputType    :: Maybe String } 
                              deriving Show
-
-type Text = String
 
 instance FromJSON PSettings where
   parseJSON (Object v) =
@@ -27,5 +25,5 @@ instance FromJSON PSettings where
   parseJSON _ = error "Wrong structure of input file"                               
 
 --Parses a JSON file from a directory on your computer  
-main = do b <- Data.ByteString.Lazy.readFile "jsontest.json"
+main = do b <- Data.ByteString.Lazy.readFile "linePlotTest.json"
           return (decode b :: Maybe PSettings)

@@ -13,7 +13,7 @@ data PSettings = PSettings { inputData     :: String,
                              title         :: Maybe String,
                              properties    :: Maybe (Map String String),
                              outputType    :: Maybe String } 
-                             deriving (Show, Eq)
+                             deriving Show
 
 instance FromJSON PSettings where
   parseJSON (Object v) =

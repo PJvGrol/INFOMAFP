@@ -2,14 +2,14 @@
    for them -}
 module ErrorData where
 
-data ErrorList = Errors [ValError] deriving (Show)
+data ErrorList = Errors [ValError] deriving (Show, Eq)
 
 data ValError = RequieredFieldMissing String
                 | DataNotMatchesType String
                 | UnknownGraphType String
                 | UnknownOutPutType String
                 | NoErrorsFound String
-                 deriving (Show)
+                 deriving (Show, Eq)
  
 {- Simple function that combines to ErrorLists. -}                 
 combine :: ErrorList -> ErrorList -> ErrorList

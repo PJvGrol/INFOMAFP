@@ -20,6 +20,7 @@ executable ChartWrapper
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.10
+                       , aeson
                        , Chart
                        , Chart-cairo
                        , Chart-diagrams

@@ -12,7 +12,7 @@ import Data.Aeson
 {- For now, this function reads in a JSON file and returns all the errors that it has found.
    If no errors were found, it returns "Found no errors" -}
 main = do b  <- Data.ByteString.Lazy.readFile "linePlotTest.json"
-          return (toSList (case (decode b :: Maybe PSettings ) of Nothing -> Errors [RequieredFieldMissing "One of the requiered fields has incorrect input or is missing."]
+          return (toSList (case (decode b :: Maybe PSettings ) of Nothing -> Errors [RequiredFieldMissing "One of the required fields has incorrect input or is missing."]
                                                                   Just v  -> case parse v of Left e  -> e
                                                                                              Right _ -> Errors [NoErrorsFound "Found no errors"]))
           

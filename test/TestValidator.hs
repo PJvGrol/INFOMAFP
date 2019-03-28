@@ -12,7 +12,7 @@ import ErrorData
 main = do runTestTT tests
 
 {- Function that parses a file into a list of error messages, that can then be compared. -}
-parseFile b = case (decode b :: Maybe PSettings) of Nothing -> Errors [RequieredFieldMissing "One of the requiered fields has incorrect input or is missing."]
+parseFile b = case (decode b :: Maybe PSettings) of Nothing -> Errors [RequiredFieldMissing "One of the required fields has incorrect input or is missing."]
                                                     Just v  -> case parse v of Left e -> e
                                                                                _      -> Errors [NoErrorsFound "Found no errors"]
                                                                                

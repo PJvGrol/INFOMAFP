@@ -11,7 +11,7 @@ import Data.Map
 import ConvertDefaults
 import Data.Maybe (fromJust)
 
-{- Fills the requiered data fields for a line plot. It returns either the data or 
+{- Fills the required data fields for a line plot. It returns either the data or 
    a list of all errors found. -}
 parseLineInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double z) 
 parseLineInput inp pro = case parseVal inp of Left e1  -> case lookUpLimit pro of Left e2 -> Left (Errors [e1,e2])

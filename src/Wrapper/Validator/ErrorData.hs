@@ -4,7 +4,7 @@ module ErrorData where
 
 data ErrorList = Errors [ValError] deriving (Show, Eq)
 
-data ValError = RequieredFieldMissing String
+data ValError = RequiredFieldMissing String
                 | DataNotMatchesType String
                 | UnknownGraphType String
                 | UnknownOutPutType String
@@ -20,7 +20,7 @@ toSList :: ErrorList -> String
 toSList (Errors ls) = foldr ((++).(\x -> x ++ "\n").toString) ("") ls 
 
 toString :: ValError -> String
-toString (RequieredFieldMissing s) = s
+toString (RequiredFieldMissing s) = s
 toString (DataNotMatchesType s)    = s
 toString (UnknownGraphType s)      = s
 toString (UnknownOutPutType s)     = s

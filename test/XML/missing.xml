@@ -1,0 +1,11 @@
+<settings> 
+   <inputData>[[(3,3),(1,1)]]</inputData>
+   <outputType>svg</outputType>
+   <properties>
+      <limit_values>[[(2,1)]]</limit_values>
+      <lineColor>red</lineColor>
+      <lineDashes>[1.0]</lineDashes>
+      <lineWidth>3.0</lineWidth>
+   </properties>
+   <title>A plot</title>
+</settings>

@@ -1,10 +1,10 @@
 {- This module contains some helpful parser functions for several basic data types. -}
-module ConvertDefaults where
+module Wrapper.Validator.ConvertDefaults where
 
-import ChartData
+import Wrapper.ChartData
 import Prelude hiding (lookup)
 import Data.Map
-import ErrorData
+import Wrapper.Validator.ErrorData
 import Text.Read (readMaybe)
 
 parseDouble :: String -> (Map String String) -> Either ValError (Maybe Double) 

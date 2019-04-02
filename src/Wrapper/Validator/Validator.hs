@@ -1,25 +1,23 @@
-{-# LANGUAGE BlockArguments #-}
+module Wrapper.Validator.Validator where 
 
-module Validator where 
-
-import Parser
-import ErrorData
-import ChartData
-import LinesValidator
+import Wrapper.Parser.Parser
+import Wrapper.Validator.ErrorData
+import Wrapper.ChartData
+import Wrapper.Validator.LinesValidator
 import Data.ByteString.Lazy
 import Data.Aeson
 
 {- For now, this function reads in a JSON file and returns all the errors that it has found.
    If no errors were found, it returns "Found no errors" -}
-main = do b  <- Data.ByteString.Lazy.readFile "linePlotTest.json"
-          return (toSList (case (decode b :: Maybe PSettings ) of Nothing -> Errors [RequiredFieldMissing "One of the required fields has incorrect input or is missing."]
-                                                                  Just v  -> case parse v of Left e  -> e
-                                                                                             Right _ -> Errors [NoErrorsFound "Found no errors"]))
+-- main = do b  <- Data.ByteString.Lazy.readFile "linePlotTest.json"
+--           return (toSList (case (decode b :: Maybe PSettings ) of Nothing -> Errors [RequiredFieldMissing "One of the required fields has incorrect input or is missing."]
+--                                                                   Just v  -> case parse v of Left e  -> e
+--                                                                                              Right _ -> Errors [NoErrorsFound "Found no errors"]))
           
 {- Transforms the input of the JSON file in either a list of errors or a into 
    settings that can be convert to a graph. If the graph type is not recognized,
    it will immediately return that error. -}
-parse :: PSettings -> Either ErrorList (Settings Double Double z)
+parse :: PSettings -> Either ErrorList (Settings Double Double)
 parse p = case chartType p of "lines" -> parseLinePlot p
                               _       -> Left (Errors [UnknownGraphType "The provided graph type is not recognized."])
 
@@ -39,7 +37,7 @@ parseOut t = case t of Just "svg" -> Right SVG
 
 {- The main function that parses a line plot. It combines all the results or errors 
    that have been found during parsing. -}
-parseLinePlot :: PSettings -> Either ErrorList (Settings Double Double z)
+parseLinePlot :: PSettings -> Either ErrorList (Settings Double Double  )
 parseLinePlot (PSettings inp typ tit pro out) = 
      let inp' = parseLineInput inp pro
          typ' = parseType typ

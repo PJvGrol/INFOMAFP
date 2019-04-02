@@ -1,4 +1,13 @@
-module Wrapper.ChartData where
+module Wrapper.Data where
+
+--- Settings that are produced by the parsers
+data PSettings =  PSettings {
+  inputType  :: String,
+  graphType  :: String,
+  title      :: Maybe String,
+  properties :: Maybe (Map String String),
+  outputType :: Maybe String
+  } deriving (Eq, Show)
 
 {-
 
@@ -27,8 +36,8 @@ Important changes (for now) with respect to the Chart library:
 
 -}
 
-data Settings x y = Settings { 
-   inputData  :: InputData x y,
+data Settings x y z = Settings { 
+   inputData  :: InputData x y z,
    graphType  :: GraphType,
    title      :: Maybe String,
    properties :: [PropertyType],
@@ -40,7 +49,7 @@ data GraphType = Pie | Vector | Points | Lines | Histogram | Fill | ErrorBars
 
 data OutputType = SVG | PNG | PS
 
-data InputData x y = PlotPoints [(x,y)]
+data InputData x y z = PlotPoints [(x,y)]
                      | FillData [(x,(y,y))]
                      | VectorData x y
                      | LinesData (LinesData x y)
@@ -49,7 +58,7 @@ data InputData x y = PlotPoints [(x,y)]
                      | HiddenValues x y
                      | CandleData x y
                      | BarsData x y
-                    --  | SpotsData [(x,y,z)]
+                     | SpotsData [(x,y,z)]
                      | AnnotationData [(x,y,String)]
                      | PieData [PieItem]
                      | TypesData ([x],[y])

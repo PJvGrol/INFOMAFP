@@ -1,0 +1,7 @@
+{
+  "inputData": "[[(1,1),(2,2)]]",
+  "graphType": "lines",
+  "title": "A plot",
+  "properties" : { "limit_values" : "[[(3,3)]]" , "line_style" : "[1.0,\"Red\",Nothing]" },
+  "outputType" : "svg"
+}

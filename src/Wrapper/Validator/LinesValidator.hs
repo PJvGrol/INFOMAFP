@@ -1,19 +1,19 @@
 {- This module has several functions that help convert PSettings to subtypes 
    defined in ChartData.hs. In this case for all line plot graphs. -}
-module LinesValidator where
+module Wrapper.Validator.LinesValidator where
 
 import Prelude hiding (lookup)
-import Parser
-import ChartData
-import ErrorData
+import Wrapper.Parser.Parser
+import Wrapper.ChartData
+import Wrapper.Validator.ErrorData
 import Text.Read (readMaybe)
 import Data.Map
-import ConvertDefaults
+import Wrapper.Validator.ConvertDefaults
 import Data.Maybe (fromJust)
 
 {- Fills the required data fields for a line plot. It returns either the data or 
    a list of all errors found. -}
-parseLineInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double z) 
+parseLineInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double) 
 parseLineInput inp pro = case parseVal inp of Left e1  -> case lookUpLimit pro of Left e2 -> Left (Errors [e1,e2])
                                                                                   _       -> Left (Errors [e1])
                                               Right v1 -> case lookUpLimit pro of Left e2  -> Left (Errors [e2])

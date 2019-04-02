@@ -42,11 +42,6 @@ runProgram = do
                 case Wrapper.Parser.Parser.parseJson b of
                     Nothing -> print ("Parsing failure")
                     Just r -> check (Wrapper.Validator.Validator.parse r)
-    print opts
-           
-            
-validate Nothing = Nothing
-validate (Just s) = Just (Wrapper.Rendering.PlotRendering.render s)
 
 check :: Either ErrorList (Settings Double Double) -> IO ()
 check (Left x) = print (toSList x)

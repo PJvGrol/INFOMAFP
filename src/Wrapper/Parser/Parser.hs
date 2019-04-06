@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, BlockArguments #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Parser where

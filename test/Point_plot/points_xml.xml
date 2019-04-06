@@ -1,0 +1,12 @@
+<settings>
+   <graphType>points</graphType>   
+   <inputData>[(3,3),(1,1),(2,4),(5,5)]</inputData>
+   <outputType>svg</outputType>
+   <properties>
+   		<color>red</color>
+   		<borderColor>black</borderColor>
+   		<borderWidth>3.0</borderWidth>
+   		<pointRadius>1.1</pointRadius>
+   </properties>
+   <title>A plot</title>
+</settings>

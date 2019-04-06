@@ -1,0 +1,7 @@
+{
+  "inputData": "[(1,2),(9.0,7),(2,15),(3,5),(4.4,2.9)]",
+  "graphType": "points",
+  "title": "A plot",
+  "properties" : { "color" : "red" , "borderColor" : "black", "borderWidth" : "2.0", "pointRadius" : "1.1" },
+  "outputType" : "svg"
+}

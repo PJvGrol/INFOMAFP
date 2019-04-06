@@ -1,5 +1,3 @@
-{-# Language BlockArguments #-}
-
 module TestValidator where
 
 import Test.HUnit
@@ -23,7 +21,8 @@ parseXML' b = case parseXML b of Nothing -> Errors [RequiredFieldMissing "One of
 {- All tests in this file bundled together -}
 tests = TestList [TestLabel "General tests" general_tests,
                   TestLabel "Line plot tests" lineplot_tests,
-                  TestLabel "XML tests" xml_tests]
+                  TestLabel "XML tests" xml_tests,
+                  TestLabel "Point plot tests" pointplot_tests]
                                                                                                                                                             
 general_tests  = TestList [TestLabel "Test empty" test_empty, 
                            TestLabel "Test missing" test_missing,
@@ -39,7 +38,11 @@ lineplot_tests = TestList [TestLabel "Test line plot mult. errors" line_mult,
                            TestLabel "Test unrecognized vals line plot" lines_val,
                            TestLabel "Test correct file" line_correct
                             ]
- 
+                            
+pointplot_tests = TestList [TestLabel "Test point plot corrrect xml" points_xml,
+                           TestLabel "Test unrecognized vals point plot" points_val,
+                           TestLabel "Test correct file" points_correct
+                            ]
 ---------- General tests -----------                           
 
 {- Tests the output of an empty file -}
@@ -84,3 +87,17 @@ xml_empty = TestCase (do b <- readFile "xml/empty.xml"
 {- Tests an xml file where entry for the graph type is missing -}
 xml_missing = TestCase (do b <- readFile "xml/missing.xml"
                            assertEqual "Missing graph type" (parseXML' b) (Errors [RequiredFieldMissing "One of the required fields has incorrect input or is missing."]))
+                           
+--------- Point plot tests ------------
+
+{- Tests an input file with no incorrect entries that is completely filled -}
+points_correct = TestCase (do b  <- B.readFile "point_plot/points_correct.json"
+                              assertEqual "correct" (parseFile b) (Errors [NoErrorsFound "Found no errors"]))
+                              
+{- Tests an input file that has input values of the wrong type -}                            
+points_val = TestCase ( do b  <- B.readFile "point_plot/points_val.json"
+                           assertEqual "Wrong input values" (parseFile b) (Errors [DataNotMatchesType "The input data does not match the required type. In the case of a point plot the input has to have type [(x,y)]."])) 
+                           
+{- Tests a correct xml file for a line plot with all fields filled -}
+points_xml = TestCase (do b <- readFile "point_plot/points_xml.xml"
+                          assertEqual "xml point plot" (parseXML' b) (Errors [NoErrorsFound "Found no errors"]))

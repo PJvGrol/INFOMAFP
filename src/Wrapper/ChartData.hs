@@ -27,8 +27,8 @@ Important changes (for now) with respect to the Chart library:
 
 -}
 
-data Settings x y z = Settings { 
-   inputData  :: InputData x y z,
+data Settings x y = Settings { 
+   inputData  :: InputData x y,
    graphType  :: GraphType,
    title      :: Maybe String,
    properties :: [PropertyType],
@@ -40,19 +40,19 @@ data GraphType = Pie | Vector | Points | Lines | Histogram | Fill | ErrorBars
 
 data OutputType = SVG | PNG | PS
 
-data InputData x y z = PlotPoints [(x,y)]
-                     | FillData [(x,(y,y))]
-                     | VectorData x y
-                     | LinesData (LinesData x y)
-                     | HistoData x y
-                     | ErrorData [ErrorPoint x y]
-                     | HiddenValues x y
-                     | CandleData x y
-                     | BarsData x y
-                     | SpotsData [(x,y,z)]
-                     | AnnotationData [(x,y,String)]
-                     | PieData [PieItem]
-                     | TypesData ([x],[y])
+data InputData x y = PlotPoints [(x,y)]
+                   | FillData [(x,(y,y))]
+                   | VectorData x y
+                   | LinesData (LinesData x y)
+                   | HistoData x y
+                   | ErrorData [ErrorPoint x y]
+                   | HiddenValues x y
+                   | CandleData x y
+                   | BarsData x y
+                   -- | SpotsData [(x,y,z)]
+                   | AnnotationData [(x,y,String)]
+                   | PieData [PieItem]
+                   | TypesData ([x],[y])
 
 {-
 A vector plot can have three different types of input data, of which only the

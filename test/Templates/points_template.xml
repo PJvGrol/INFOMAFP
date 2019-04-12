@@ -1,0 +1,12 @@
+<settings>
+   <graphType>points</graphType>   
+   <inputData></inputData>
+   <outputType></outputType>
+   <properties>
+   		<color></color>
+   		<borderColor></borderColor>
+   		<borderWidth></borderWidth>
+   		<pointRadius></pointRadius>
+   </properties>
+   <title></title>
+</settings>

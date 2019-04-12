@@ -1,0 +1,6 @@
+{
+  "inputData": "[(\"one\",\"red\",3.4,1.2),(\"two\",\"blue\",2,6)]",
+  "graphType": "pie",
+  "title": "A plot",
+  "outputType" : "svg"
+}

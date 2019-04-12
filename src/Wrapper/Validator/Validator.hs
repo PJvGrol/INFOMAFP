@@ -7,6 +7,8 @@ import ErrorData
 import ChartData
 import LinesValidator
 import PointsValidator
+import PieValidator
+import BarsValidator
 import Data.ByteString.Lazy
 import Data.Aeson
 
@@ -23,6 +25,8 @@ main = do b  <- Data.ByteString.Lazy.readFile "linePlotTest.json"
 parse :: PSettings -> Either ErrorList (Settings Double Double)
 parse p = case chartType p of "lines"  -> parseLinePlot p
                               "points" -> parsePoints p
+                              "bars"   -> parseBars p
+                              "pie"    -> parsePie p
                               _        -> Left (Errors [UnknownGraphType "The provided graph type is not recognized."])
                               
 
@@ -30,7 +34,9 @@ chartType :: PSettings -> String
 chartType (PSettings _ t _ _ _) = t
 
 parseType t = case t of "lines"  -> Lines
-                        "points" -> Lines
+                        "points" -> Points
+                        "bars"   -> Bars
+                        "pie"    -> Pie
 
 {- Checks whether the provided output type matches any of the defaults. If no 
    input type is provided then it returns SVG -}
@@ -48,6 +54,12 @@ parseLinePlot ps = parsePlot ps parseLineInput parseLineProp
 
 parsePoints :: PSettings -> Either ErrorList (Settings Double Double) 
 parsePoints ps = parsePlot ps parsePointInput parsePointProp
+
+parseBars :: PSettings -> Either ErrorList (Settings Double Double)
+parseBars ps = parsePlot ps parseBarsInput parseBarsProp
+
+parsePie :: PSettings -> Either ErrorList (Settings Double Double)
+parsePie ps = parsePlot ps parsePieInput parsePieProp
 
 {- A function that works for any type of plot, provided with a function to parse 
    the input values and a function that parses the properties. -}

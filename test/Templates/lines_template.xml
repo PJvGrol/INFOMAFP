@@ -1,0 +1,12 @@
+<settings>
+   <graphType>lines</graphType>   
+   <inputData></inputData>
+   <outputType></outputType>
+   <properties>
+      <limit_values></limit_values>
+      <lineColor></lineColor>
+      <lineDashes></lineDashes>
+      <lineWidth></lineWidth>
+   </properties>
+   <title></title>
+</settings>

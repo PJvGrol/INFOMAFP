@@ -48,7 +48,7 @@ data InputData x y = PlotPoints [(x,y)]
                    | ErrorData [ErrorPoint x y]
                    | HiddenValues x y
                    | CandleData x y
-                   | BarsData x y
+                   | BarsData (BarsData x y)
                    -- | SpotsData [(x,y,z)]
                    | AnnotationData [(x,y,String)]
                    | PieData [PieItem]
@@ -121,18 +121,18 @@ singleton_w: width of the plotted bars.
 -}
 data BarsData x y = BarsData' {
                        bars_values     :: [(x,[y])],
-                       item_styles     :: Maybe [(Color, Maybe LineStyle)], 
+                       item_styles     :: Maybe [Color], 
                        titles          :: Maybe [String], 
                        reference       :: Maybe y,        
                        singleton_width :: Maybe Double    
                        }
-                       
+   
+{- Left out line style -}
 data PieItem = PieItem {
                     label            :: String,
                     pie_color        :: Maybe Color,
                     offset           :: Double,
-                    value            :: Double,
-                    label_line_style :: Maybe LineStyle
+                    value            :: Double
                     }
                            
 data PropertyType = Border Color
@@ -188,6 +188,6 @@ data PieLayout = PieLayout' {
                            
 data BarsStyle = Stacked | Clustered                          
 
-data Color = Red | Blue | Black | White                  
+data Color = Red | Blue | Black | White  deriving Eq            
                  
 data Limit a = LMin | LValue a | LMAx

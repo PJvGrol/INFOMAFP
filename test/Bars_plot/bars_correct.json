@@ -1,0 +1,7 @@
+{
+  "inputData": "[(3,[3,1,2]),(1,[1,7,8])]",
+  "graphType": "bars",
+  "title": "A plot",
+  "properties" : { "item_styles" : "[\"red\",\"blue\"]" , "titles" : "[\"plot_1\", \"plot_2\"]", "reference" : "4", "singleton_width" : "3" },
+  "outputType" : "svg"
+}

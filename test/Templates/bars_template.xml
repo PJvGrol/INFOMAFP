@@ -1,0 +1,12 @@
+<settings>
+   <graphType>bars</graphType>   
+   <inputData></inputData>
+   <outputType></outputType>
+   <properties>
+      <item_styles></item_styles>
+      <titles></titles>
+      <reference></reference>
+      <singleton_width></singleton_width>
+   </properties>
+   <title></title>
+</settings>

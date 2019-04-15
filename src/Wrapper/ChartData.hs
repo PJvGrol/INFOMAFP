@@ -1,4 +1,4 @@
-module ChartData where
+module Wrapper.ChartData where
 
 {-
 

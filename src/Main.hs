@@ -1,4 +1,5 @@
 module Main where
 
-main :: IO ()
-main = putStrLn "Hello, Haskell!"
+import Wrapper.Program
+
+main = runProgram 

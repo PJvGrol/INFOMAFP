@@ -1,13 +1,13 @@
 {- This module has several functions that help convert PSettings to subtypes 
    defined in ChartData.hs. In this case for all line plot graphs. -}
-module LinesValidator where
+module Wrapper.Validator.LinesValidator where
 
 import Prelude hiding (lookup)
-import ChartData
-import ErrorData
+import Wrapper.ChartData
+import Wrapper.Validator.ErrorData
 import Text.Read (readMaybe)
 import Data.Map
-import ConvertDefaults
+import Wrapper.Validator.ConvertDefaults
 import Data.Maybe (fromJust)
 
 {- Fills the required data fields for a line plot. It returns either the data or 

@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
-module Parser where
+module Wrapper.Parser.Parser where
 
 import Data.Aeson
 import Data.Maybe
-import qualified Data.ByteString.Lazy as B (readFile)
+import Data.ByteString.Lazy hiding (null, head, foldr)
 import Data.Map (Map, fromList)
 import Text.XML.HXT.Parser.XmlParsec
 import Text.XML.HXT.DOM.XmlNode hiding (getText)
@@ -28,12 +27,10 @@ instance FromJSON PSettings where
   parseJSON _ = error "Wrong structure of input file"                               
 
 --Parses a JSON file from a directory on your computer  
-parJson = do b <- B.readFile "line_correct.json"
-             return (decode b :: Maybe PSettings)
+parseJson :: ByteString -> Maybe PSettings
+parseJson = decode
  
-main = do b <- readFile "test.xml"
-          return (parseXML b)
-          
+parseXML :: String -> Maybe PSettings
 parseXML b = let x = xread b in
                 if null x then Nothing else (ntreeToPsettings.removeEmpty.getChildren) (head x) 
 

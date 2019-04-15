@@ -1,13 +1,13 @@
 {- This module has several functions that help convert PSettings to subtypes 
    defined in ChartData.hs. In this case for all pie plot graphs. -}
-module PieValidator where
+module Wrapper.Validator.PieValidator where
 
-import Prelude hiding (lookup)
-import ChartData
-import ErrorData
+import Prelude
+import Wrapper.ChartData
+import Wrapper.Validator.ErrorData
 import Text.Read (readMaybe)
-import Data.Map hiding (map)
-import ConvertDefaults
+import Data.Map
+import Wrapper.Validator.ConvertDefaults
 
 {- Fills the required data fields for a pie plot. It returns either the data or 
    a list of all errors found. -} 

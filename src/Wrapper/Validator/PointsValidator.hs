@@ -1,13 +1,13 @@
 {- This module has several functions that help convert PSettings to subtypes 
    defined in ChartData.hs. In this case for all point plot graphs. -}
-module PointsValidator where
+module Wrapper.Validator.PointsValidator where
 
-import ErrorData
-import ChartData
+import Wrapper.Validator.ErrorData
+import Wrapper.ChartData
 import Text.Read (readMaybe)
 import Data.Map (Map)
 import Data.Maybe (fromJust)
-import ConvertDefaults (parseDouble, parseColor)
+import Wrapper.Validator.ConvertDefaults (parseDouble, parseColor)
 
 parsePointInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double)
 parsePointInput inp pro = case parseVal inp of Left e  -> Left e

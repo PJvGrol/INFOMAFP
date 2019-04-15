@@ -1,24 +1,15 @@
-{-# LANGUAGE BlockArguments #-}
+module Wrapper.Validator.Validator where 
 
-module Validator where 
-
-import Parser
-import ErrorData
-import ChartData
-import LinesValidator
-import PointsValidator
-import PieValidator
-import BarsValidator
+import Wrapper.Parser.Parser
+import Wrapper.Validator.ErrorData
+import Wrapper.ChartData
+import Wrapper.Validator.LinesValidator
+import Wrapper.Validator.PointsValidator
+import Wrapper.Validator.PieValidator
+import Wrapper.Validator.BarsValidator
 import Data.ByteString.Lazy
 import Data.Aeson
 
-{- For now, this function reads in a JSON file and returns all the errors that it has found.
-   If no errors were found, it returns "Found no errors" -}
-main = do b  <- Data.ByteString.Lazy.readFile "linePlotTest.json"
-          return (toSList (case (decode b :: Maybe PSettings ) of Nothing -> Errors [RequiredFieldMissing "One of the required fields has incorrect input or is missing."]
-                                                                  Just v  -> case parse v of Left e  -> e
-                                                                                             Right _ -> Errors [NoErrorsFound "Found no errors"]))
-          
 {- Transforms the input of the JSON file in either a list of errors or a into 
    settings that can be convert to a graph. If the graph type is not recognized,
    it will immediately return that error. -}

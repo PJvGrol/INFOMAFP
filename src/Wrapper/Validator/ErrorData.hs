@@ -1,6 +1,6 @@
 {- Module that contains the DataType for Error messages and some useful functions
    for them -}
-module ErrorData where
+module Wrapper.Validator.ErrorData where
 
 data ErrorList = Errors [ValError] deriving (Show, Eq)
 

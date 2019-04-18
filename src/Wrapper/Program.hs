@@ -1,20 +1,79 @@
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module Wrapper.Program where
 
-import Data.ByteString.Lazy
-
-import Wrapper.ChartData
-import Wrapper.Parser.Parser
-import Wrapper.Rendering.PlotRendering
-import Wrapper.Validator.Validator
-import Wrapper.Validator.ErrorData
-
-import Control.Monad.Reader
-import Options.Applicative
+import qualified Control.Exception as E
+import           Control.Monad.Reader
+import           Control.Monad.Except
+import qualified Data.Bifunctor as BF
+import qualified Data.Bool as B
+import qualified Data.Char as C
+import           Options.Applicative
 import Data.Semigroup ((<>))
 
-newtype Options = Options {
-    oFileToRead :: String
-} deriving (Show)
+import Wrapper.Parser.Parser
+import Wrapper.Parser.Data
+import System.FilePath
+
+import qualified Data.ByteString.Lazy as By
+
+-- types
+
+data Options = Options
+    { 
+        oFileToRead :: String
+    }
+
+type AppConfig = MonadReader Options
+
+data AppError = IOError E.IOException | ParseError String
+
+
+newtype App a = App {
+    runApp :: ReaderT Options (ExceptT AppError IO) a
+} deriving (Monad, Functor, Applicative, AppConfig, MonadIO, MonadError AppError)
+
+-- program
+
+runProgram :: Options -> IO ()
+runProgram o = either renderError return =<< runExceptT (runReaderT (runApp run) o)
+
+renderError :: AppError -> IO ()
+renderError (IOError e) = do
+    putStrLn "There was an error:"
+    putStrLn $ "  " ++ show e
+renderError (ParseError e) = do
+    putStrLn "There was an error:"
+    putStrLn $ "  " ++ show e
+
+run :: App ()
+run = liftIO . print =<< loadContents
+
+-- data retrieval and transformation
+
+-- getSource :: App String
+-- getSource = B.bool loadContents (liftIO getContents) =<< asks oStdIn
+
+-- handleRendering :: AppConfig m => String -> m String
+-- handleRendering s = B.bool s (map C.toUpper s) <$> asks oCapitalize
+
+-- handleValidation :: PSettings -> App Settings
+-- handleValidation s = B.bool s ("ZOMG " ++ s) <$> asks oExcited
+
+-- handleParsing :: InputString -> App PSettings
+-- handleParsing inputString = case parse inputString of
+--     Nothing -> throwError "An error occured during parsing"
+--     (Just pSettings) -> return pSettings
+
+loadContents :: App InputString
+loadContents = readFileFromOptions =<< asks oFileToRead
+    where
+        readFileFromOptions f = case takeExtension f of
+            "json" -> either throwError (return . JsonString) =<< (BF.first IOError <$> liftIO (safeReadJsonFile f))
+            "xml" -> either throwError (return . XmlString) =<< (BF.first IOError <$> liftIO (safeReadXmlFile f))
+            _ -> throwError (ParseError "test")
 
 options :: Parser Options
 options = Options <$> 
@@ -31,19 +90,14 @@ parseOptions = execParser opts
             <> progDesc "Provide a JSON or XML file to transform it into a Graph." 
             <> header "ChartWrapper - It was never easier to render graphs!" )
 
-runProgram :: IO ()
-runProgram = do
-    opts <- parseOptions
-    case opts of
-        Options h ->
-            do
-                b <- Data.ByteString.Lazy.readFile h
-                case Wrapper.Parser.Parser.parseJson b of
-                    Nothing -> print "Parsing failure"
-                    Just r -> check (Wrapper.Validator.Validator.parse r)
+safeReadJsonFile :: FilePath -> IO (Either E.IOException By.ByteString)
+safeReadJsonFile = E.try . By.readFile
 
-check :: Either ErrorList (Settings Double Double) -> IO ()
-check (Left x) = print (toSList x)
-check (Right x) = do
-                    Wrapper.Rendering.PlotRendering.tRender x
-                    print "Success" 
+safeReadXmlFile :: FilePath -> IO (Either E.IOException String)
+safeReadXmlFile = E.try . readFile
+
+-- safeReadFile :: FilePath -> Either E.IOException InputString
+-- safeReadFile fp = case extension fp of
+--                     ".json" -> BF.second JsonString <$> liftIO (safeReadJsonFile fp)           
+--                     -- ".xml" -> BF.second XmlString <$> liftIO (safeReadXmlFile fp)
+--                     -- _ -> userError "Input type not recognised"

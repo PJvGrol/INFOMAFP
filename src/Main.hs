@@ -2,4 +2,5 @@ module Main where
 
 import Wrapper.Program
 
-main = runProgram 
+main :: IO ()
+main = runProgram =<< parseOptions

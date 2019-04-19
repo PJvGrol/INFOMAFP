@@ -52,7 +52,8 @@ run = do
 handleRendering :: Settings Double Double -> App String
 handleRendering settings = do 
     outputFile <- asks oFileToOutput
-    liftIO $ renderToFile outputFile settings
+    renderedFile <- renderToFile outputFile settings
+    liftIO $ renderedFile
     return "Successfully rendered your graph!"
 
 handleValidation :: PSettings -> App (Settings Double Double)
@@ -77,13 +78,13 @@ safeReadJsonFile = E.try . By.readFile
 safeReadXmlFile :: FilePath -> IO (Either E.IOException String)
 safeReadXmlFile = E.try . readFile
 
-renderToFile :: FilePath -> Settings Double Double -> IO (Graphics.Rendering.Chart.Renderable.PickFn ())
+renderToFile :: FilePath -> Settings Double Double -> App (IO (Graphics.Rendering.Chart.Renderable.PickFn ()))
 renderToFile file settings = case unpack $ toLower $ takeExtension file of
-    ".png" -> inlineRender BEC.PNG
-    ".svg" -> inlineRender BEC.SVG
-    ".ps" -> inlineRender BEC.PS
-    ".pdf" -> inlineRender BEC.PDF
-    _ -> error "Type not supported"
+    ".png" -> return $ inlineRender BEC.PNG
+    ".svg" -> return $ inlineRender BEC.SVG
+    ".ps" -> return $ inlineRender BEC.PS
+    ".pdf" -> return $ inlineRender BEC.PDF
+    o -> throwError $ RenderError ("Unsuppored file extension: " ++ o)
     where
         inlineRender t = let fileOptions = BEC.FileOptions (800,600) t in BEC.renderableToFile fileOptions file $ R.render settings
 

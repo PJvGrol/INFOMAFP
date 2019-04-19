@@ -1,33 +1,35 @@
 # INFOMAFP
 Project for the Advanced Functional Programming
 
-# TODO
-1. Create the initial cabal project with Charts library added and running. (Follow best practices).
-2. Define input file structure
-3. Define data structure
+# Commands
+You can type ```ChartWrapper --help``` for a description of all optionas available to the ChartWrapper.
+Here is a small demonstration for generating a bar graph as PNG from a Json file:
 
-
-# Requirements
-1. Default fallback if properties are not provided. This enables fast and easy setup, but still allows for customisation.
-2. Keep the input file type modular (Easy support for XML, YAML in the future).
-3. Error messages on json level - invalid structure, missing values etc.
-4. Error messages on model level - data structure does not match grapgh type etc.
-5. Include file output type of the graph (SVG, PNG etc.) in the input file (Also with default).
-
-# Initial Model
-
-```haskell
-data Settings = Settings {
-  data :: DataType
-  type :: GraphType
-  title :: Maybe String
-  properties :: Maybe [PropertyType]
-  output :: Maybe OutputType
-}
-
-data GraphType = Pie | Plot | Vector | ...
-data OutputType = SVG | PNG | PS | ...
-data PropertyType = Color Color | BorderColor Color | BorderWidth Double | Radius Double | ...
-
-data DataType x y = PlotPoints [(x,y)] | Fill [(x, (y,y))] | ...
+Json file example:
 ```
+{
+  "inputData": "[(3,[3,1,2]),(1,[1,7,8]),(1,[4,3,2])]",
+  "graphType": "bars",
+  "title": "Bar Example",
+  "properties" : { "titles" : "[\"bar_1\", \"bar_2\", \"bar_3\"]"},
+}
+```
+Command:
+```
+./ChartWrapper -i bars_correct.json -o bars.png
+```
+
+Generates:
+TODO
+
+# Setup Instructions
+You might need to install the Chart library if you want to build ChartWrapper.
+
+Instructions can be found here: https://github.com/timbod7/haskell-chart/wiki
+Then you can simply run:
+``` 
+cabal install
+cabal build
+```
+
+You will find the executable in the dist/build/ChartWrapper.

@@ -10,7 +10,7 @@ data Settings x y = Settings {
 
 data GraphType = Pie | Points | Lines | ErrorBars | Bars
 
-data OutputType = SVG | PNG | PS
+data OutputType = SVG | PNG | PS deriving Enum
 
 data InputData x y = PlotPoints [(x,y)]
                    | LinesData (LinesData x y)

@@ -16,9 +16,9 @@ extra-source-files:  ChangeLog.md, README.md
 cabal-version:       >=1.10
 
 executable ChartWrapper
-  main-is:             Main.hs
-  -- other-modules:       
-  -- other-extensions:    
+  main-is:             Main.hs 
+  hs-source-dirs:      src
+  default-language:    Haskell2010
   build-depends:       base >=4.9 && <4.10
                        , aeson
                        , Chart
@@ -33,6 +33,52 @@ executable ChartWrapper
                        , optparse-applicative
                        , filepath
                        , text
-                       , HUnit
+
+library 
   hs-source-dirs:      src
+  exposed-modules:     Wrapper.Validator.FileValidator
+                       , Wrapper.Parser.FileParser
+                       , Wrapper.Parser.JsonParser
+                       , Wrapper.Parser.XmlParser
+                       , Wrapper.ErrorHandling
+                       , Wrapper.ChartData
+                       , Wrapper.Parser.Data
+  build-depends:       base >=4.9 && <4.10
+                       , aeson
+                       , Chart
+                       , Chart-cairo
+                       , Chart-diagrams
+                       , containers
+                       , bytestring
+                       , hxt
+                       , lens
+                       , data-default-class
+                       , mtl
+                       , optparse-applicative
+                       , filepath
+                       , text
   default-language:    Haskell2010
+
+test-suite tests
+  hs-source-dirs:      tests
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  build-depends:       base >=4.9 && <4.10
+                       , tasty
+                       , tasty-quickcheck
+                       , tasty-hunit
+                       , tasty-smallcheck
+                       , ChartWrapper
+                       , aeson
+                       , Chart
+                       , Chart-cairo
+                       , Chart-diagrams
+                       , containers
+                       , bytestring
+                       , hxt
+                       , lens
+                       , data-default-class
+                       , mtl
+                       , optparse-applicative
+                       

@@ -2,12 +2,12 @@
    defined in ChartData.hs. In this case for all pie plot graphs. -}
 module Wrapper.Validator.PieValidator where
 
-import Prelude
 import Wrapper.ChartData
-import Wrapper.Validator.ErrorData
+import Wrapper.ErrorHandling
+import Wrapper.Validator.ConvertDefaults
+
 import Text.Read (readMaybe)
 import Data.Map
-import Wrapper.Validator.ConvertDefaults
 
 {- Fills the required data fields for a pie plot. It returns either the data or 
    a list of all errors found. -} 

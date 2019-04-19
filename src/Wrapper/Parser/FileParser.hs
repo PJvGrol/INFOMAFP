@@ -1,4 +1,4 @@
-module Wrapper.Parser.Parser where
+module Wrapper.Parser.FileParser where
 
 import Wrapper.Parser.JsonParser
 import Wrapper.Parser.XmlParser

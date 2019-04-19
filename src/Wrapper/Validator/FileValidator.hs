@@ -1,24 +1,29 @@
-module Wrapper.Validator.Validator where 
+module Wrapper.Validator.FileValidator where 
 
-import Wrapper.Parser.Parser
-import Wrapper.Validator.ErrorData
+-- Wrapper imports
+import Wrapper.Parser.FileParser
+import Wrapper.Parser.Data
+import Wrapper.ErrorHandling
 import Wrapper.ChartData
 import Wrapper.Validator.LinesValidator
 import Wrapper.Validator.PointsValidator
 import Wrapper.Validator.PieValidator
 import Wrapper.Validator.BarsValidator
+
+-- Other imports
 import Data.ByteString.Lazy
 import Data.Aeson
 
 {- Transforms the input of the JSON file in either a list of errors or a into 
    settings that can be convert to a graph. If the graph type is not recognized,
    it will immediately return that error. -}
-parse :: PSettings -> Either ErrorList (Settings Double Double)
-parse p = case chartType p of "lines"  -> parseLinePlot p
-                              "points" -> parsePoints p
-                              "bars"   -> parseBars p
-                              "pie"    -> parsePie p
-                              _        -> Left (Errors [UnknownGraphType "The provided graph type is not recognized."])
+validate :: PSettings -> Either ErrorList (Settings Double Double)
+validate p = case chartType p of 
+    "lines"  -> parseLinePlot p
+    "points" -> parsePoints p
+    "bars"   -> parseBars p
+    "pie"    -> parsePie p
+    _        -> Left (Errors [UnknownGraphType "The provided graph type is not recognized."])
                               
 
 chartType :: PSettings -> String

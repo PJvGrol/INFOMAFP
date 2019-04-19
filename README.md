@@ -20,7 +20,7 @@ Command:
 ```
 
 Generates:
-TODO
+![alt text](https://github.com/PJvGrol/INFOMAFP/blob/master/bars.png)
 
 # Setup Instructions
 You might need to install the Chart library if you want to build ChartWrapper.

@@ -53,7 +53,7 @@ handleRendering :: Settings Double Double -> App String
 handleRendering settings = do 
     outputFile <- asks oFileToOutput
     renderedFile <- renderToFile outputFile settings
-    liftIO $ renderedFile
+    liftIO renderedFile
     return "Successfully rendered your graph!"
 
 handleValidation :: PSettings -> App (Settings Double Double)
@@ -67,7 +67,7 @@ handleParsing input = case WP.parse input of
 readInput :: App InputString
 readInput = readFileFromOptions =<< asks oFileToRead
     where
-        readFileFromOptions f = case unpack $ toLower $ takeExtension f of
+        readFileFromOptions f = case unpack (toLower (pack (takeExtension f))) of
             ".json" -> either throwError (return . JsonString) =<< (BF.first IOError <$> liftIO (safeReadJsonFile f))
             ".xml" -> either throwError (return . XmlString) =<< (BF.first IOError <$> liftIO (safeReadXmlFile f))
             o -> throwError (FileError $ "Unsupported file extension: " ++ o)
@@ -79,7 +79,7 @@ safeReadXmlFile :: FilePath -> IO (Either E.IOException String)
 safeReadXmlFile = E.try . readFile
 
 renderToFile :: FilePath -> Settings Double Double -> App (IO (Graphics.Rendering.Chart.Renderable.PickFn ()))
-renderToFile file settings = case unpack $ toLower $ takeExtension file of
+renderToFile file settings = case unpack (toLower (pack (takeExtension file))) of
     ".png" -> return $ inlineRender BEC.PNG
     ".svg" -> return $ inlineRender BEC.SVG
     ".ps" -> return $ inlineRender BEC.PS

@@ -6,7 +6,7 @@ import Graphics.Rendering.Chart.Plot.Lines
 import Graphics.Rendering.Chart.Layout
 import Graphics.Rendering.Chart.Plot.Types
 import Graphics.Rendering.Chart.Axis.Types
-import Graphics.Rendering.Chart.Plot.Bars hiding (plotBars)
+import Graphics.Rendering.Chart.Plot.Bars
 
 import Control.Lens
 import Data.Maybe
@@ -28,7 +28,7 @@ toLayout settings = layout_title .~ plotTitle
 transform' :: Settings Double Double -> Plot Double Double
 transform' settings = case graphType settings of
     Lines -> toPlot $ plotLines settings
-    Bars -> toPlot $ plotBars settings
+    Bars -> plotBars $ plotBars' settings
     _ -> error "Unknown GraphType"
 
 plotLines :: Settings Double Double -> PlotLines Double Double
@@ -40,14 +40,9 @@ plotLines settings = plot_lines_title .~ plotTitle
         plotData = case inputData settings of
             LinesData ldata -> l_values ldata
 
-plotBars :: Settings Double Double -> PlotBars Double Double
-plotBars settings = case inputData settings of
-    BarsData ldata -> def
-    _ -> error "Invlaid input data"
-    -- where
-    --     plotData = case inputData settings of
-    --         BarsData ldata -> _plot_bars_titles .~ fromMaybe [] $ titles ldata
-    --                             $ _plot_bars_values .~ bars_values ldata
-    --                             $ def
-    --         _ -> error "Invalid input data"
-        
+plotBars' :: Settings Double Double -> PlotBars Double Double
+plotBars' settings = case inputData settings of
+    BarsData ldata -> plot_bars_titles .~ fromMaybe [] (titles ldata)
+                      $ plot_bars_values .~ bars_values ldata
+                      $ def
+    _ -> error "Invalid input data"

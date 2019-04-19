@@ -15,10 +15,11 @@ import qualified Wrapper.Validator.FileValidator as WV
 import qualified Wrapper.Rendering.PlotRendering as WR
 
 -- Other imports
+import Data.Text
+import Data.Default.Class
 import Control.Monad.Reader
 import Control.Monad.Except
 import System.FilePath
-import Data.Default.Class
 import Graphics.Rendering.Chart.Renderable
 
 import qualified Control.Exception as E
@@ -65,10 +66,10 @@ handleParsing input = case WP.parse input of
 readInput :: App InputString
 readInput = readFileFromOptions =<< asks oFileToRead
     where
-        readFileFromOptions f = case takeExtension f of
+        readFileFromOptions f = case toLower $ takeExtension f of
             ".json" -> either throwError (return . JsonString) =<< (BF.first IOError <$> liftIO (safeReadJsonFile f))
             ".xml" -> either throwError (return . XmlString) =<< (BF.first IOError <$> liftIO (safeReadXmlFile f))
-            o -> throwError (FileError $ "Unknown file extension: " ++ o)
+            o -> throwError (FileError $ "Unsupported file extension: " ++ o)
 
 safeReadJsonFile :: FilePath -> IO (Either E.IOException By.ByteString)
 safeReadJsonFile = E.try . By.readFile
@@ -77,9 +78,14 @@ safeReadXmlFile :: FilePath -> IO (Either E.IOException String)
 safeReadXmlFile = E.try . readFile
 
 renderToFile :: FilePath -> Settings Double Double -> IO (Graphics.Rendering.Chart.Renderable.PickFn ())
-renderToFile file settings = case takeExtension file of
-    ".png" -> BEC.renderableToFile def file $ R.render settings
+renderToFile file settings = case toLower $ takeExtension file of
+    ".png" -> inlineRender BEC.PNG
+    ".svg" -> inlineRender BEC.SVG
+    ".ps" -> inlineRender BEC.PS
+    ".pdf" -> inlineRender BEC.PDF
     _ -> error "Type not supported"
+    where
+        inlineRender type = let fileOptions = BEC.FileOptions (800,600) type in BEC.renderableToFile fileOptions file $ R.render settings
 
 renderError :: AppError -> IO ()
 renderError (IOError e) = do

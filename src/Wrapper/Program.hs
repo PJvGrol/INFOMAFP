@@ -66,7 +66,7 @@ handleParsing input = case WP.parse input of
 readInput :: App InputString
 readInput = readFileFromOptions =<< asks oFileToRead
     where
-        readFileFromOptions f = case toLower $ takeExtension f of
+        readFileFromOptions f = case unpack $ toLower $ takeExtension f of
             ".json" -> either throwError (return . JsonString) =<< (BF.first IOError <$> liftIO (safeReadJsonFile f))
             ".xml" -> either throwError (return . XmlString) =<< (BF.first IOError <$> liftIO (safeReadXmlFile f))
             o -> throwError (FileError $ "Unsupported file extension: " ++ o)
@@ -78,14 +78,14 @@ safeReadXmlFile :: FilePath -> IO (Either E.IOException String)
 safeReadXmlFile = E.try . readFile
 
 renderToFile :: FilePath -> Settings Double Double -> IO (Graphics.Rendering.Chart.Renderable.PickFn ())
-renderToFile file settings = case toLower $ takeExtension file of
+renderToFile file settings = case unpack $ toLower $ takeExtension file of
     ".png" -> inlineRender BEC.PNG
     ".svg" -> inlineRender BEC.SVG
     ".ps" -> inlineRender BEC.PS
     ".pdf" -> inlineRender BEC.PDF
     _ -> error "Type not supported"
     where
-        inlineRender type = let fileOptions = BEC.FileOptions (800,600) type in BEC.renderableToFile fileOptions file $ R.render settings
+        inlineRender t = let fileOptions = BEC.FileOptions (800,600) t in BEC.renderableToFile fileOptions file $ R.render settings
 
 renderError :: AppError -> IO ()
 renderError (IOError e) = do

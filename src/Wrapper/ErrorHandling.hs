@@ -1,23 +1,37 @@
-{- Module that contains the DataType for Error messages and some useful functions
-   for them -}
-module Wrapper.Validator.ErrorData where
+module Wrapper.ErrorHandling where
 
-data ErrorList = Errors [ValError] deriving (Show, Eq)
+import qualified Control.Exception as E
+
+-- Types
+data AppError = IOError E.IOException 
+    | FileError String 
+    | ParseError String 
+    | ValidationError String 
+    | RenderError String
+
+newtype ErrorList = Errors [ValError]
 
 data ValError = RequiredFieldMissing String
                 | DataNotMatchesType String
                 | UnknownGraphType String
                 | UnknownOutPutType String
                 | NoErrorsFound String
-                 deriving (Show, Eq)
- 
+
+-- Instances
+instance Show ValError where
+    show = toString
+
+instance Show ErrorList where
+    show = toSList
+
+-- Helpers
 {- Simple function that combines to ErrorLists. -}                 
 combine :: ErrorList -> ErrorList -> ErrorList
 combine (Errors e1) (Errors e2) = Errors (e1 ++ e2) 
 
 {- Simple function that combines all errors into one string. -}
 toSList :: ErrorList -> String
-toSList (Errors ls) = foldr ((++).(\x -> x ++ "\n").toString) ("") ls 
+toSList (Errors ls) = foldr ((++) . (++ "\n") . show) "" ls 
 
 toString :: ValError -> String
 toString (RequiredFieldMissing s) = s

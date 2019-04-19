@@ -1,49 +1,106 @@
-module Wrapper.Program where
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE FlexibleContexts #-}
 
-import Data.ByteString.Lazy
+module Wrapper.Program (runProgram) where
 
+-- Wrapper imports
+import Wrapper.Options
+import Wrapper.Parser.Data
 import Wrapper.ChartData
-import Wrapper.Parser.Parser
-import Wrapper.Rendering.PlotRendering
-import Wrapper.Validator.Validator
-import Wrapper.Validator.ErrorData
+import Wrapper.ErrorHandling
 
+import qualified Wrapper.Parser.FileParser as WP
+import qualified Wrapper.Validator.FileValidator as WV
+import qualified Wrapper.Rendering.PlotRendering as WR
+
+-- Other imports
+import Data.Text
+import Data.Default.Class
 import Control.Monad.Reader
-import Options.Applicative
-import Data.Semigroup ((<>))
+import Control.Monad.Except
+import System.FilePath
+import Graphics.Rendering.Chart.Renderable
 
-newtype Options = Options {
-    oFileToRead :: String
-} deriving (Show)
+import qualified Control.Exception as E
+import qualified Data.Bifunctor as BF
+import qualified Data.Char as C
+import qualified Graphics.Rendering.Chart.Backend.Cairo as BEC
+import qualified Data.ByteString.Lazy as By
+import qualified Wrapper.Rendering.PlotRendering as R
 
-options :: Parser Options
-options = Options <$> 
-            strOption ( long "file" 
-                        <> short 'f' 
-                        <> metavar "FILEPATH" 
-                        <> help "File used to render the graph." )
+-- Types
+type AppConfig = MonadReader Options
 
-parseOptions :: IO Options
-parseOptions = execParser opts
+newtype App a = App {
+    runApp :: ReaderT Options (ExceptT AppError IO) a
+} deriving (Monad, Functor, Applicative, AppConfig, MonadIO, MonadError AppError)
+
+-- Program
+runProgram :: Options -> IO ()
+runProgram o = either renderError return =<< runExceptT (runReaderT (runApp run) o)
+
+run :: App ()
+run = do
+    input <- readInput
+    parsed <- handleParsing input
+    validated <- handleValidation parsed
+    result <- handleRendering validated
+    liftIO $ putStrLn result
+
+-- Helpers
+handleRendering :: Settings Double Double -> App String
+handleRendering settings = do 
+    outputFile <- asks oFileToOutput
+    renderedFile <- renderToFile outputFile settings
+    liftIO renderedFile
+    return "Successfully rendered your graph!"
+
+handleValidation :: PSettings -> App (Settings Double Double)
+handleValidation settings = either (throwError . ValidationError . toSList) return (WV.validate settings)
+
+handleParsing :: InputString -> App PSettings
+handleParsing input = case WP.parse input of
+    (Just settings) -> return settings
+    Nothing         -> throwError (ParseError "The input file could not be mapped to settings. Please verify you named all fields correctly.")
+
+readInput :: App InputString
+readInput = readFileFromOptions =<< asks oFileToRead
     where
-        opts = info (options <**> helper)
-            ( fullDesc 
-            <> progDesc "Provide a JSON or XML file to transform it into a Graph." 
-            <> header "ChartWrapper - It was never easier to render graphs!" )
+        readFileFromOptions f = case unpack (toLower (pack (takeExtension f))) of
+            ".json" -> either throwError (return . JsonString) =<< (BF.first IOError <$> liftIO (safeReadJsonFile f))
+            ".xml" -> either throwError (return . XmlString) =<< (BF.first IOError <$> liftIO (safeReadXmlFile f))
+            o -> throwError (FileError $ "Unsupported file extension: " ++ o)
 
-runProgram :: IO ()
-runProgram = do
-    opts <- parseOptions
-    case opts of
-        Options h ->
-            do
-                b <- Data.ByteString.Lazy.readFile h
-                case Wrapper.Parser.Parser.parseJson b of
-                    Nothing -> print "Parsing failure"
-                    Just r -> check (Wrapper.Validator.Validator.parse r)
+safeReadJsonFile :: FilePath -> IO (Either E.IOException By.ByteString)
+safeReadJsonFile = E.try . By.readFile
 
-check :: Either ErrorList (Settings Double Double) -> IO ()
-check (Left x) = print (toSList x)
-check (Right x) = do
-                    Wrapper.Rendering.PlotRendering.tRender x
-                    print "Success" 
+safeReadXmlFile :: FilePath -> IO (Either E.IOException String)
+safeReadXmlFile = E.try . readFile
+
+renderToFile :: FilePath -> Settings Double Double -> App (IO (Graphics.Rendering.Chart.Renderable.PickFn ()))
+renderToFile file settings = case unpack (toLower (pack (takeExtension file))) of
+    ".png" -> return $ inlineRender BEC.PNG
+    ".svg" -> return $ inlineRender BEC.SVG
+    ".ps" -> return $ inlineRender BEC.PS
+    ".pdf" -> return $ inlineRender BEC.PDF
+    o -> throwError $ RenderError ("Unsuppored file extension: " ++ o)
+    where
+        inlineRender t = let fileOptions = BEC.FileOptions (800,600) t in BEC.renderableToFile fileOptions file $ R.render settings
+
+renderError :: AppError -> IO ()
+renderError (IOError e) = do
+    putStrLn "An error occurred when trying to load the input file:"
+    putStrLn $ "  " ++ show e
+renderError (FileError e) = do
+    putStrLn "An error occurred when trying to load the input file:"
+    putStrLn $ "  " ++ show e
+renderError (ParseError e) = do
+    putStrLn "An error occurred when trying to parse the input file:"
+    putStrLn $ "  " ++ show e
+renderError (ValidationError e) = do
+    putStrLn "An error occurred when trying to validate the input file:"
+    putStrLn $ "  " ++ show e
+renderError (RenderError e) = do
+    putStrLn "An error occurred when trying to render the input file:"
+    putStrLn $ "  " ++ show e

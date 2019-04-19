@@ -1,5 +1,7 @@
 module Main where
 
 import Wrapper.Program
+import Wrapper.Options
 
-main = runProgram 
+main :: IO ()
+main = runProgram =<< parseOptions

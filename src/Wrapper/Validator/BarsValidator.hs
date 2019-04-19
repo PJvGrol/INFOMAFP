@@ -1,13 +1,16 @@
 {- This module has several functions that help convert PSettings to subtypes 
-   defined in ChartData.hs. In this case for all bars plot graphs. -}
+   defined in ChartData.hs. -}
 module Wrapper.Validator.BarsValidator where
 
-import Wrapper.Validator.ErrorData
+-- Wrapper Modules
+import Wrapper.ErrorHandling
 import Wrapper.ChartData
+import Wrapper.Validator.ConvertDefaults 
+
+-- Other Modules
 import Text.Read (readMaybe)
 import Data.Map (Map)
 import Data.Maybe (fromJust)
-import Wrapper.Validator.ConvertDefaults 
          
 parseBarsInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double)
 parseBarsInput s dic = let vals = parseVal s in

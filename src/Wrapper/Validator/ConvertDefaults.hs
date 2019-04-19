@@ -2,10 +2,11 @@
 module Wrapper.Validator.ConvertDefaults where
 
 import Wrapper.ChartData
+import Wrapper.ErrorHandling
+
 import Prelude hiding (lookup)
 import Data.Map hiding (map, foldr)
 import Data.Maybe (fromJust)
-import Wrapper.Validator.ErrorData
 import Text.Read (readMaybe)
 
 parseDouble :: String -> (Map String String) -> Either ValError (Maybe Double) 

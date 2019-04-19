@@ -2,12 +2,13 @@
    defined in ChartData.hs. In this case for all line plot graphs. -}
 module Wrapper.Validator.LinesValidator where
 
-import Prelude hiding (lookup)
 import Wrapper.ChartData
-import Wrapper.Validator.ErrorData
+import Wrapper.ErrorHandling
+import Wrapper.Validator.ConvertDefaults
+
+import Prelude hiding (lookup)
 import Text.Read (readMaybe)
 import Data.Map
-import Wrapper.Validator.ConvertDefaults
 import Data.Maybe (fromJust)
 
 {- Fills the required data fields for a line plot. It returns either the data or 

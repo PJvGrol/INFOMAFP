@@ -2,12 +2,13 @@
    defined in ChartData.hs. In this case for all point plot graphs. -}
 module Wrapper.Validator.PointsValidator where
 
-import Wrapper.Validator.ErrorData
+import Wrapper.ErrorHandling
 import Wrapper.ChartData
+import Wrapper.Validator.ConvertDefaults (parseDouble, parseColor)
+
 import Text.Read (readMaybe)
 import Data.Map (Map)
 import Data.Maybe (fromJust)
-import Wrapper.Validator.ConvertDefaults (parseDouble, parseColor)
 
 parsePointInput :: String -> Maybe (Map String String) -> Either ErrorList (InputData Double Double)
 parsePointInput inp pro = case parseVal inp of Left e  -> Left e

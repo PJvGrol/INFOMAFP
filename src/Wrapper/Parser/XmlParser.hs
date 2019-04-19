@@ -1,35 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
+module Wrapper.Parser.XmlParser where
 
-module Wrapper.Parser.Parser where
-
-import Data.Aeson
-import Data.Maybe
-import Data.ByteString.Lazy hiding (null, head, foldr)
-import Data.Map (Map, fromList)
 import Text.XML.HXT.Parser.XmlParsec
 import Text.XML.HXT.DOM.XmlNode hiding (getText)
 import Text.XML.HXT.Core hiding (xread, getChildren, getText)
-
-data PSettings = PSettings { inputData     :: String,
-                             graphType     :: String, 
-                             title         :: Maybe String,
-                             properties    :: Maybe (Map String String),
-                             outputType    :: Maybe String } 
-                             deriving (Show, Eq)
-
-instance FromJSON PSettings where
-  parseJSON (Object v) =
-    PSettings <$> v .:  "inputData"
-              <*> v .:  "graphType" 
-              <*> v .:? "title"
-              <*> v .:? "properties"
-              <*> v .:? "outputType"
-  parseJSON _ = error "Wrong structure of input file"                               
-
---Parses a JSON file from a directory on your computer  
-parseJson :: ByteString -> Maybe PSettings
-parseJson = decode
- 
+import Data.Map (Map, fromList)
+import Wrapper.Parser.Data
+import Data.Maybe
+    
 parseXML :: String -> Maybe PSettings
 parseXML b = let x = xread b in
                 if null x then Nothing else (ntreeToPsettings.removeEmpty.getChildren) (head x) 
@@ -62,13 +39,13 @@ ntreeToPsettings :: [NTree XNode] -> Maybe PSettings
 ntreeToPsettings [] = Nothing
 ntreeToPsettings t = let x1 = findTag "inputData" t
                          x2 = findTag "graphType" t in
-                       if x1 == Nothing then Nothing else
-                          if x2 == Nothing then Nothing else Just
+                        if x1 == Nothing then Nothing else
+                            if x2 == Nothing then Nothing else Just
                             (PSettings (getText (head (fromJust x1))) 
-                                      (getText (head (fromJust x2)))
-                                      (case findTag "title" t of Just x -> Just (getText (head x))
-                                                                 _      -> Nothing)
-                                      (case findTag "properties" t of Just x -> Just (fromList (parseProp x))
-                                                                      _      -> Nothing)
-                                      (case findTag "outputType" t of Just x -> Just (getText (head x))
-                                                                      _      -> Nothing))
+                                        (getText (head (fromJust x2)))
+                                        (case findTag "title" t of Just x -> Just (getText (head x))
+                                                                   _      -> Nothing)
+                                        (case findTag "properties" t of Just x -> Just (fromList (parseProp x))
+                                                                        _      -> Nothing)
+                                        (case findTag "outputType" t of Just x -> Just (getText (head x))
+                                                                        _      -> Nothing))

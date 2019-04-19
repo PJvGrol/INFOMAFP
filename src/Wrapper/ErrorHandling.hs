@@ -9,13 +9,13 @@ data AppError = IOError E.IOException
     | ValidationError String 
     | RenderError String
 
-newtype ErrorList = Errors [ValError]
+data ErrorList = Errors [ValError] deriving (Eq)
 
 data ValError = RequiredFieldMissing String
                 | DataNotMatchesType String
                 | UnknownGraphType String
                 | UnknownOutPutType String
-                | NoErrorsFound String
+                | NoErrorsFound String deriving (Eq)
 
 -- Instances
 instance Show ValError where
